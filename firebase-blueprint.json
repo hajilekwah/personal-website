@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "UserSetting": {
+      "title": "UserSetting",
+      "description": "Custom widget state preferences per user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "theme": { "type": "string", "enum": ["indigo", "emerald", "crimson", "amber", "cyan"] },
+        "speed": { "type": "number" },
+        "particleCount": { "type": "number" },
+        "interactiveGlow": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "theme", "speed", "particleCount", "interactiveGlow", "updatedAt"]
+    },
+    "GuestbookMessage": {
+      "title": "GuestbookMessage",
+      "description": "Visitor messages left on the live portfolio blackboard",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "userName", "text", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/settings/{userId}": {
+      "schema": "UserSetting",
+      "description": "User preferences for theme styling, particles count, and custom speed multipliers"
+    },
+    "/messages/{messageId}": {
+      "schema": "GuestbookMessage",
+      "description": "Public board messages written by authenticated domain visitors"
+    }
+  }
+}

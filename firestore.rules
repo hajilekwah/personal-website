@@ -1,0 +1,110 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Auth tokens NEVER contain custom claims. You MUST explicitly look up roles using get() or exists() on a trusted database document if you want to find admin.
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation Helpers
+    function isValidSetting(data) {
+      return data.keys().hasAll(['userId', 'theme', 'speed', 'particleCount', 'interactiveGlow', 'updatedAt'])
+        && data.keys().size() == 6
+        && data.userId is string
+        && data.userId.size() <= 128
+        && data.theme is string
+        && (data.theme == 'indigo' || data.theme == 'emerald' || data.theme == 'crimson' || data.theme == 'amber' || data.theme == 'cyan')
+        && (data.speed is float || data.speed is int)
+        && data.speed >= 0.2
+        && data.speed <= 3.0
+        && data.particleCount is int
+        && data.particleCount >= 20
+        && data.particleCount <= 180
+        && data.interactiveGlow is bool;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['id', 'userId', 'userName', 'userEmail', 'photoUrl', 'text', 'createdAt'])
+        && data.keys().size() == 7
+        && data.id is string
+        && data.id.size() <= 128
+        && data.userId is string
+        && data.userId.size() <= 128
+        && data.userName is string
+        && data.userName.size() <= 100
+        && data.userEmail is string
+        && data.userEmail.size() <= 100
+        && data.photoUrl is string
+        && data.photoUrl.size() <= 500
+        && data.text is string
+        && data.text.size() >= 1
+        && data.text.size() <= 280;
+    }
+
+    // Match patterns
+    match /settings/{userId} {
+      allow get: if isSignedIn() && userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      
+      allow create: if isSignedIn()
+        && isEmailVerified()
+        && isValidId(userId)
+        && userId == request.auth.uid
+        && isValidSetting(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().updatedAt == request.time;
+
+      allow update: if isSignedIn()
+        && isEmailVerified()
+        && userId == request.auth.uid
+        && isValidSetting(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['theme', 'speed', 'particleCount', 'interactiveGlow', 'updatedAt']);
+
+      allow delete: if isSignedIn() && userId == request.auth.uid;
+    }
+
+    match /messages/{messageId} {
+      allow get: if true;
+      allow list: if true;
+
+      allow create: if isSignedIn()
+        && isEmailVerified()
+        && isValidId(messageId)
+        && messageId == incoming().id
+        && isValidMessage(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().createdAt == request.time;
+
+      // Update is forbidden - guestbook messages are immutable
+      allow update: if false;
+
+      allow delete: if isSignedIn()
+        && existing().userId == request.auth.uid;
+    }
+  }
+}

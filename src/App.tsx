@@ -1,4 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+import { User } from 'firebase/auth';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { auth, db, handleFirestoreError, OperationType } from './firebase';
+import Guestbook from './components/Guestbook';
+import AuthBadge from './components/AuthBadge';
 import gsap from 'gsap';
 import { 
   Github, 
@@ -31,6 +36,66 @@ export default function App() {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [isSpawning, setIsSpawning] = useState<boolean>(false);
   const [copiedKey, setCopiedKey] = useState<boolean>(false);
+
+  const [user, setUser] = useState<User | null>(null);
+  const isIncomingUpdate = useRef<boolean>(false);
+
+  // Track auth state transitions
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((usr) => {
+      setUser(usr);
+    });
+    return unsubscribe;
+  }, []);
+
+  // Bidirectional Preferences Sync - FROM Firestore
+  useEffect(() => {
+    if (!user) return;
+
+    const docRef = doc(db, 'settings', user.uid);
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        isIncomingUpdate.current = true;
+        if (data.theme) setTheme(data.theme as AccentTheme);
+        if (data.speed !== undefined) setSpeed(data.speed);
+        if (data.particleCount !== undefined) setParticleCount(data.particleCount);
+        if (data.interactiveGlow !== undefined) setInteractiveGlow(data.interactiveGlow);
+      }
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, `settings/${user.uid}`);
+    });
+
+    return unsubscribe;
+  }, [user]);
+
+  // Bidirectional Preferences Sync - TO Firestore
+  useEffect(() => {
+    if (!user) return;
+    if (isIncomingUpdate.current) {
+      isIncomingUpdate.current = false;
+      return;
+    }
+
+    const saveSettings = async () => {
+      const docRef = doc(db, 'settings', user.uid);
+      try {
+        await setDoc(docRef, {
+          userId: user.uid,
+          theme,
+          speed,
+          particleCount,
+          interactiveGlow,
+          updatedAt: new Date()
+        });
+      } catch (error) {
+        handleFirestoreError(error, OperationType.WRITE, `settings/${user.uid}`);
+      }
+    };
+
+    const delay = setTimeout(saveSettings, 1000);
+    return () => clearTimeout(delay);
+  }, [theme, speed, particleCount, interactiveGlow, user]);
 
   // Set real-time tracking for UTC display
   useEffect(() => {
@@ -189,11 +254,12 @@ export default function App() {
           </span>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
           <div className="hidden md:flex gap-6 text-[10px] uppercase tracking-[0.4em] font-bold text-white/40">
             <span>Digital Portfolio</span>
             <span>00.01 // Alpha</span>
           </div>
+          <AuthBadge />
           <button
             id="btn-deploy-guide-trigger"
             onClick={() => setShowGuide(true)}
@@ -445,6 +511,9 @@ export default function App() {
               <span>{currentTime || 'Syncing...'}</span>
             </div>
           </div>
+
+          {/* Guestbook Board */}
+          <Guestbook />
 
         </div>
       </section>
