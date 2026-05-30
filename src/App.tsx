@@ -214,7 +214,7 @@ export default function App() {
               CONNECT:
             </span>
             <a 
-              href="https://github.com" 
+              href="https://github.com/hajilekwah" 
               target="_blank" 
               rel="noopener noreferrer"
               className="px-3.5 py-1.5 border border-white/5 hover:border-[#39ff14]/30 bg-white/[0.01] hover:bg-[#39ff14]/5 rounded-full text-[10px] uppercase font-mono tracking-widest text-zinc-300 hover:text-[#39ff14] transition-all flex items-center gap-1.5"
@@ -223,7 +223,7 @@ export default function App() {
               <span>Github</span>
             </a>
             <a 
-              href="https://linkedin.com" 
+              href="https://linkedin.com/in/elijahhawk" 
               target="_blank" 
               rel="noopener noreferrer"
               className="px-3.5 py-1.5 border border-white/5 hover:border-[#39ff14]/30 bg-white/[0.01] hover:bg-[#39ff14]/5 rounded-full text-[10px] uppercase font-mono tracking-widest text-zinc-300 hover:text-[#39ff14] transition-all flex items-center gap-1.5"
@@ -232,7 +232,7 @@ export default function App() {
               <span>LinkedIn</span>
             </a>
             <a 
-              href="https://x.com" 
+              href="https://x.com/kn6mrq" 
               target="_blank" 
               rel="noopener noreferrer"
               className="px-3.5 py-1.5 border border-white/5 hover:border-[#39ff14]/30 bg-white/[0.01] hover:bg-[#39ff14]/5 rounded-full text-[10px] uppercase font-mono tracking-widest text-zinc-300 hover:text-[#39ff14] transition-all flex items-center gap-1.5"
