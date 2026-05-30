@@ -71,6 +71,7 @@ const renderFragmentShaderSource = `
   uniform float u_aspect;
   uniform vec2 u_resolution;
   uniform vec3 u_themeColor;
+  uniform float u_luminosity;
 
   void main() {
     float dx = texture2D(u_water, v_texCoord + vec2(u_delta.x, 0.0)).r - texture2D(u_water, v_texCoord - vec2(u_delta.x, 0.0)).r;
@@ -89,9 +90,9 @@ const renderFragmentShaderSource = `
 
     // Color gradient based on normal magnitude (depth)
     float flow = length(vec2(dx, dy)) * 5.0; // amplify for visibility
-    vec3 baseCol = vec3(0.015, 0.015, 0.015); // dark background
-    vec3 deepCol = u_themeColor * 0.8; // main fluid uses the theme color
-    vec3 highlight = mix(u_themeColor, vec3(1.0), 0.6); // highlight based on theme color
+    vec3 baseCol = vec3(0.015, 0.015, 0.015) * u_luminosity; // dark background
+    vec3 deepCol = u_themeColor * 0.8 * u_luminosity; // main fluid uses the theme color
+    vec3 highlight = mix(u_themeColor, vec3(1.0), 0.6) * u_luminosity; // highlight based on theme color
     
     vec3 finalColor = mix(baseCol, deepCol, min(flow * 3.0, 1.0));
     finalColor += highlight * specular * 1.8;
@@ -103,7 +104,7 @@ const renderFragmentShaderSource = `
       step(0.95, fract(gridCoord.x + normal.x * 2.0)),
       step(0.95, fract(gridCoord.y + normal.y * 2.0))
     );
-    finalColor += grid * (u_themeColor * 0.15);
+    finalColor += grid * (u_themeColor * 0.15) * u_luminosity;
 
     gl_FragColor = vec4(finalColor, 1.0);
   }
@@ -143,6 +144,7 @@ export interface WebGLFluidSubstrateProps {
   forceMultiplier?: number;
   dripIntensity?: number;
   themeColorHex?: string;
+  luminosity?: number;
 }
 
 function hexToRgb(hex: string) {
@@ -155,10 +157,11 @@ function hexToRgb(hex: string) {
 }
 
 export default function WebGLFluidSubstrate({ 
-  damping = 0.98, 
-  forceMultiplier = 150.0,
-  dripIntensity = 0.2,
-  themeColorHex = "#39ff14"
+  damping = 0.83, 
+  forceMultiplier = 240.0,
+  dripIntensity = 0.15,
+  themeColorHex = "#9C81C8",
+  luminosity = 0.3
 }: WebGLFluidSubstrateProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -167,13 +170,15 @@ export default function WebGLFluidSubstrate({
   const forceRef = useRef(forceMultiplier);
   const dripRef = useRef(dripIntensity);
   const themeColorRef = useRef(hexToRgb(themeColorHex));
+  const luminosityRef = useRef(luminosity);
 
   useEffect(() => {
     dampingRef.current = damping;
     forceRef.current = forceMultiplier;
     dripRef.current = dripIntensity;
     themeColorRef.current = hexToRgb(themeColorHex);
-  }, [damping, forceMultiplier, dripIntensity, themeColorHex]);
+    luminosityRef.current = luminosity;
+  }, [damping, forceMultiplier, dripIntensity, themeColorHex, luminosity]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -223,6 +228,11 @@ export default function WebGLFluidSubstrate({
       const fbo = gl!.createFramebuffer();
       gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo);
       gl!.framebufferTexture2D(gl!.FRAMEBUFFER, gl!.COLOR_ATTACHMENT0, gl!.TEXTURE_2D, tex, 0);
+
+      if (gl!.checkFramebufferStatus(gl!.FRAMEBUFFER) !== gl!.FRAMEBUFFER_COMPLETE) {
+        // Fallback to UNSIGNED_BYTE if float/half-float aren't supported as render targets (e.g. some Safari on iOS)
+        gl!.texImage2D(gl!.TEXTURE_2D, 0, gl!.RGBA, w, h, 0, gl!.RGBA, gl!.UNSIGNED_BYTE, null);
+      }
 
       // Initialize with zeros
       gl!.viewport(0, 0, w, h);
@@ -344,6 +354,7 @@ export default function WebGLFluidSubstrate({
       gl.uniform1f(gl.getUniformLocation(renderProgram, 'u_aspect'), window.innerWidth / window.innerHeight);
       gl.uniform2f(gl.getUniformLocation(renderProgram, 'u_resolution'), w, h);
       gl.uniform3fv(gl.getUniformLocation(renderProgram, 'u_themeColor'), new Float32Array(themeColorRef.current));
+      gl.uniform1f(gl.getUniformLocation(renderProgram, 'u_luminosity'), luminosityRef.current);
 
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 

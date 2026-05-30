@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import gsap from 'gsap';
 import { 
@@ -19,10 +19,11 @@ export default function App() {
   const infoCardRef = useRef<HTMLDivElement | null>(null);
 
   // WebGL Controls State
-  const [damping, setDamping] = useState(0.96);
-  const [force, setForce] = useState(250);
-  const [dripIntensity, setDripIntensity] = useState(0.8);
-  const [themeColorHex, setThemeColorHex] = useState('#39ff14');
+  const [damping, setDamping] = useState(0.83);
+  const [force, setForce] = useState(240);
+  const [dripIntensity, setDripIntensity] = useState(0.15);
+  const [themeColorHex, setThemeColorHex] = useState('#9C81C8');
+  const [luminosity, setLuminosity] = useState(0.3);
   const [showControls, setShowControls] = useState(false);
 
   // Set real-time tracking for UTC clock
@@ -107,7 +108,7 @@ export default function App() {
 
   return (
     <main 
-      className="relative min-h-screen w-full flex flex-col justify-between items-center text-zinc-100 font-sans p-4 md:p-8 overflow-y-auto select-none bg-[#050505]"
+      className="relative min-h-[100dvh] w-full flex flex-col justify-between items-center text-zinc-100 font-sans p-4 md:p-8 overflow-y-auto select-none bg-[#050505]"
       style={{
         '--theme-color': themeColorHex,
         // Calculate RGB array for color-mix compatibility where needed
@@ -142,7 +143,13 @@ export default function App() {
       `}</style>
 
       {/* WebGL Fluid Physics Canvas Background layer */}
-      <WebGLFluidSubstrate damping={damping} forceMultiplier={force} dripIntensity={dripIntensity} themeColorHex={themeColorHex} />
+      <WebGLFluidSubstrate 
+        damping={damping} 
+        forceMultiplier={force} 
+        dripIntensity={dripIntensity} 
+        themeColorHex={themeColorHex} 
+        luminosity={luminosity} 
+      />
 
       {/* Control Panel */}
       <div id="controls-wrapper" className="fixed inset-0 pointer-events-none z-[100] flex items-center justify-center sm:block sm:inset-auto sm:top-4 sm:right-4">
@@ -196,6 +203,13 @@ export default function App() {
               <span>{dripIntensity.toFixed(2)}</span>
             </label>
             <input type="range" min="0.0" max="1.0" step="0.05" value={dripIntensity} onChange={(e) => setDripIntensity(parseFloat(e.target.value))} className="w-full accent-theme h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="flex justify-between text-zinc-400">
+              <span>Luminosity</span>
+              <span>{(luminosity * 100).toFixed(0)}%</span>
+            </label>
+            <input type="range" min="0.1" max="2.0" step="0.1" value={luminosity} onChange={(e) => setLuminosity(parseFloat(e.target.value))} className="w-full accent-theme h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
           </div>
         </motion.div>
       </div>
