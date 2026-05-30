@@ -55,10 +55,27 @@ export default function App() {
       { opacity: 1, x: 0, filter: 'blur(0px)', duration: 1.2 },
       "-=1.2"
     )
-    .fromTo("#title-hawk",
-      { opacity: 0, x: 180, y: -120, rotation: 25, scale: 1.8, filter: 'blur(20px)' },
-      { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1, filter: 'blur(0px)', duration: 1.6, ease: 'back.out(1.8)' },
+    // The swoop of the wrapper
+    .fromTo("#hawk-wrapper",
+      { x: 300, y: -200, rotation: 45, scale: 2 },
+      { x: 0, y: 0, rotation: 0, scale: 1, duration: 1.4, ease: "power3.out" },
       "-=1.1"
+    )
+    // Draw the wireframe while swooping
+    .fromTo(".hawk-line",
+      { strokeDashoffset: 200, strokeDasharray: 200 },
+      { strokeDashoffset: 0, duration: 1.0, ease: "power2.inOut" },
+      "<0.2"
+    )
+    // Transform Hawk SVG to text
+    .to("#hawk-svg",
+      { scale: 1.5, opacity: 0, rotation: -15, duration: 0.4, ease: "power2.in" },
+      ">"
+    )
+    .fromTo("#title-hawk",
+      { opacity: 0, scale: 0.5, filter: 'blur(10px)' },
+      { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.6, ease: "back.out(2.5)" },
+      "<0.1"
     )
     .fromTo("#tagline-text",
       { opacity: 0, y: 15 },
@@ -155,7 +172,16 @@ export default function App() {
             <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-emerald-400 font-bold mb-1">DESIGN ENGINEER</span>
             <h1 className="text-6xl sm:text-8xl font-black leading-[0.9] uppercase m-0 text-white font-display select-none flex items-center gap-4">
               <span id="title-elijah" className="inline-block tracking-tight">Elijah</span> 
-              <span id="title-hawk" className="inline-block text-transparent font-black italic tracking-tighter" style={{ WebkitTextStroke: '1.5px rgba(57,255,20,0.85)', filter: 'drop-shadow(0 0 10px rgba(57,255,20,0.2))', textShadow: '4px 4px 0 rgba(57,255,20,0.1)' }}>HAWK</span>
+              
+              <div id="hawk-wrapper" className="relative inline-block z-10 w-auto h-auto">
+                <svg id="hawk-svg" viewBox="0 0 100 100" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] stroke-[#39ff14] fill-transparent z-20 pointer-events-none origin-center" style={{ strokeWidth: "2px", filter: "drop-shadow(0 0 8px rgba(57,255,20,0.6))" }}>
+                   <path className="hawk-line" d="M50 85 L20 40 L0 15 L35 30 L50 0 L65 30 L100 15 L80 40 Z" strokeLinejoin="round" />
+                   <line className="hawk-line" x1="50" y1="85" x2="50" y2="20" />
+                   <line className="hawk-line" x1="20" y1="40" x2="80" y2="40" />
+                   <line className="hawk-line" x1="35" y1="30" x2="65" y2="30" />
+                </svg>
+                <span id="title-hawk" className="inline-block text-transparent font-black italic tracking-tighter opacity-0" style={{ WebkitTextStroke: '1.5px rgba(57,255,20,0.85)', filter: 'drop-shadow(0 0 10px rgba(57,255,20,0.2))', textShadow: '4px 4px 0 rgba(57,255,20,0.1)' }}>HAWK</span>
+              </div>
             </h1>
           </div>
 
