@@ -44,11 +44,6 @@ export default function App() {
       { opacity: 1, scale: 1, y: 0, duration: 1.5 },
       "-=0.9"
     )
-    .fromTo("#badge-status",
-      { opacity: 0, x: -16 },
-      { opacity: 1, x: 0, duration: 1.0 },
-      "-=1.1"
-    )
     .fromTo("#title-elijah",
       { opacity: 0, x: -30, filter: 'blur(10px)' },
       { opacity: 1, x: 0, filter: 'blur(0px)', duration: 1.2 },
@@ -113,7 +108,7 @@ export default function App() {
         <div className="flex flex-col gap-0.5 select-none">
           <span className="text-[10px] uppercase tracking-[0.3em] text-emerald-400 font-mono font-bold flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#39ff14] animate-pulse inline-block shadow-[0_0_8px_#39ff14]" />
-            SYS_ONLINE // LIQUID_ACTIVE
+            SYSTEM ONLINE
           </span>
           <span className="text-sm font-medium tracking-tight text-white font-mono font-semibold uppercase">
             ELIJAH HAWK © 2026
@@ -132,16 +127,8 @@ export default function App() {
           {/* Top aesthetic ambient highlight line */}
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#39ff14]/25 to-transparent" />
           
-          {/* Micro status and visual indicator row */}
-          <div id="badge-status" className="flex items-end justify-end mb-8 border-b border-white/[0.05] pb-4">
-            <div className="flex items-center gap-1.5 text-zinc-400 font-mono text-[10px]">
-              <Droplet size={11} className="text-emerald-400 animate-bounce" />
-              <span className="tracking-widest text-[9px] uppercase font-bold text-zinc-400">LIQUID MATRIX OVERLAY</span>
-            </div>
-          </div>
-
           {/* Majestic Typography Title */}
-          <div id="main-title-text" className="flex flex-col mb-5">
+          <div id="main-title-text" className="flex flex-col mb-5 mt-4">
             <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-emerald-400 font-bold mb-1">INFOSEC AND DESIGN ENGINEER</span>
             <h1 className="text-6xl sm:text-8xl font-black leading-[0.9] uppercase m-0 text-white font-display select-none flex items-center gap-4">
               <span id="title-elijah" className="inline-block tracking-tight">Elijah</span> 
@@ -266,11 +253,6 @@ export default function App() {
       <footer id="footer-row" className="w-full max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between z-10 py-4 border-t border-white/[0.04] text-[9px] text-zinc-600 mt-8 gap-2 font-mono tracking-widest uppercase">
         <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-4 font-bold">
           <span>© 2026 ELIJAH HAWK. ALL TRADEMARKS SECURED.</span>
-          <span className="hidden sm:inline text-zinc-800">|</span>
-          <span className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#39ff14] animate-ping" />
-            <span>DRIP TRANSMISSION COUPLER ENABLED</span>
-          </span>
         </div>
         
         <div className="flex items-center gap-4">
