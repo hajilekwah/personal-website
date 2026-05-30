@@ -150,7 +150,7 @@ export default function App() {
             id="tagline-text"
             className="text-zinc-300 text-sm md:text-base leading-relaxed md:leading-relaxed font-light mb-8 max-w-2xl select-text"
           >
-            Digital architect & physical interaction artisan. Currently developing a new, high-performance home for creative code experiments, liquid canvas models, custom UI systems, and architectural design methodologies. Move your cursor around to play with the physical slime substrate.
+            CISSP and OSCP certified advanced information security practitioner. Specializing in Microsoft enterprise systems, PowerShell automation, governance, and compliance. Driven by a passion for building secure, high-performance architectures and robust defense mechanisms.
           </p>
 
           {/* Bento Grid Highlights of In-Development Modules */}
@@ -160,13 +160,13 @@ export default function App() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-1.5">
                   <Activity size={12} className="text-emerald-400" />
-                  <span className="text-[9px] font-mono tracking-widest text-[#39ff14] font-bold">01 // VISUAL</span>
+                  <span className="text-[9px] font-mono tracking-widest text-[#39ff14] font-bold">01 // SECURITY</span>
                 </div>
-                <span className="text-[8px] bg-emerald-500/10 text-emerald-400 font-mono px-1.5 py-0.5 rounded">STAGING</span>
+                <span className="text-[8px] bg-emerald-500/10 text-emerald-400 font-mono px-1.5 py-0.5 rounded">ACTIVE</span>
               </div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-1.5">Interaction Lab</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-1.5">Enterprise Defense</h3>
               <p className="text-[11px] text-zinc-500 font-sans leading-relaxed">
-                Physics-based animations, canvas fluids, dynamic typography systems, and organic shaders.
+                Advanced Microsoft systems hardening, PowerShell automation, and proactive security operations.
               </p>
             </div>
 
@@ -174,13 +174,13 @@ export default function App() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-1.5">
                   <Layers size={11} className="text-[#39ff14]" />
-                  <span className="text-[9px] font-mono tracking-widest text-[#39ff14] font-bold">02 // STACK</span>
+                  <span className="text-[9px] font-mono tracking-widest text-[#39ff14] font-bold">02 // COMPLIANCE</span>
                 </div>
-                <span className="text-[8px] bg-emerald-500/10 text-emerald-400 font-mono px-1.5 py-0.5 rounded">CODING</span>
+                <span className="text-[8px] bg-emerald-500/10 text-emerald-400 font-mono px-1.5 py-0.5 rounded">ACTIVE</span>
               </div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-1.5">Systems Architecture</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-1.5">Governance Lab</h3>
               <p className="text-[11px] text-zinc-500 font-sans leading-relaxed">
-                High-throughput Node backends, reactive browser states, and polished, responsive frameworks.
+                Aligning technical controls with overarching security policies and regulatory frameworks.
               </p>
             </div>
 
@@ -194,7 +194,7 @@ export default function App() {
               </div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-1.5">Essays & Logbook</h3>
               <p className="text-[11px] text-zinc-500 font-sans leading-relaxed">
-                Reflections of deep technical work, design philosophies, and practical development guidelines.
+                Reflections of deep technical work, vulnerability research, and practical security guidelines.
               </p>
             </div>
 
