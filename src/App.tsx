@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import gsap from 'gsap';
 import { 
   Github, 
@@ -8,7 +9,8 @@ import {
   Activity,
   Layers,
   Sparkles,
-  Settings2
+  Settings2,
+  X
 } from 'lucide-react';
 import WebGLFluidSubstrate from './components/WebGLFluidSubstrate';
 
@@ -36,6 +38,7 @@ export default function App() {
 
   // GSAP Entrance Choreography
   useEffect(() => {
+    gsap.set("#hawk-wrapper", { perspective: 1000 });
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
     
     tl.fromTo("#header-row",
@@ -52,26 +55,27 @@ export default function App() {
       { opacity: 1, x: 0, filter: 'blur(0px)', duration: 1.2 },
       "-=1.2"
     )
-    // The swoop of the wrapper
+    // The carpenter's unfolding of the wrapper
     .fromTo("#hawk-wrapper",
-      { x: 300, y: -200, rotation: 45, scale: 2 },
-      { x: 0, y: 0, rotation: 0, scale: 1, duration: 1.4, ease: "power3.out" },
-      "-=1.1"
+      { rotationX: 90, rotationY: -30, z: -200, opacity: 0, transformOrigin: "left center" },
+      { rotationX: 0, rotationY: 0, z: 0, opacity: 1, duration: 1.2, ease: "power2.out" },
+      "-=0.9"
     )
-    // Draw the wireframe while swooping
+    // Draw the wireframe like a blueprint being measured
     .fromTo(".hawk-line",
-      { strokeDashoffset: 200, strokeDasharray: 200 },
-      { strokeDashoffset: 0, duration: 1.0, ease: "power2.inOut" },
+      { strokeDashoffset: 250, strokeDasharray: 250 },
+      { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" },
       "<0.2"
     )
-    // Transform Hawk SVG to text
+    // Fold the SVG away
     .to("#hawk-svg",
-      { scale: 1.5, opacity: 0, rotation: -15, duration: 0.4, ease: "power2.in" },
+      { rotationX: -90, opacity: 0, duration: 0.4, ease: "power2.in", transformOrigin: "top center" },
       ">"
     )
+    // Unfold the text like a cardboard flap
     .fromTo("#title-hawk",
-      { opacity: 0, scale: 0.5, filter: 'blur(10px)' },
-      { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.6, ease: "back.out(2.5)" },
+      { opacity: 0, rotationX: 90, transformOrigin: "bottom center" },
+      { opacity: 1, rotationX: 0, duration: 0.8, ease: "bounce.out" },
       "<0.1"
     )
     .fromTo("#tagline-text",
@@ -99,51 +103,6 @@ export default function App() {
       { opacity: 1, y: 0, duration: 1.0 },
       "-=0.8"
     );
-
-    // Smooth ambient orbit animations for gooey blobs
-    const blobs = document.querySelectorAll('.gooey-blob');
-    if (blobs.length > 0) {
-      gsap.to(blobs[0], {
-        x: 'random(-100, 100)',
-        y: 'random(-100, 100)',
-        rotation: 'random(-45, 45)',
-        scale: 'random(0.8, 1.2)',
-        duration: 'random(4, 8)',
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true
-      });
-      gsap.to(blobs[1], {
-        x: 'random(-150, 150)',
-        y: 'random(-150, 150)',
-        rotation: 'random(-90, 90)',
-        scale: 'random(0.9, 1.3)',
-        duration: 'random(5, 9)',
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true
-      });
-      gsap.to(blobs[2], {
-        x: 'random(-120, 120)',
-        y: 'random(-120, 120)',
-        rotation: 'random(-30, 30)',
-        scale: 'random(0.7, 1.4)',
-        duration: 'random(6, 10)',
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true
-      });
-      gsap.to(blobs[3], {
-        x: 'random(-200, 200)',
-        y: 'random(-50, 50)',
-        rotation: 'random(-180, 180)',
-        scale: 'random(0.8, 1.5)',
-        duration: 'random(7, 11)',
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true
-      });
-    }
   }, []);
 
   return (
@@ -172,6 +131,11 @@ export default function App() {
         .stroke-theme { stroke: var(--theme-color); }
         .accent-theme { accent-color: var(--theme-color); }
         .drop-shadow-theme { filter: drop-shadow(0 0 8px color-mix(in srgb, var(--theme-color) 60%, transparent)); }
+        .text-stroke-theme { 
+          -webkit-text-stroke: 1.5px var(--theme-color); 
+          filter: drop-shadow(0 0 10px color-mix(in srgb, var(--theme-color) 40%, transparent));
+          text-shadow: 4px 4px 0 color-mix(in srgb, var(--theme-color) 20%, transparent);
+        }
         
         .blob-1 { background-color: color-mix(in srgb, var(--theme-color) 80%, white); }
         .blob-2 { background-color: color-mix(in srgb, var(--theme-color) 90%, black); }
@@ -181,12 +145,24 @@ export default function App() {
       <WebGLFluidSubstrate damping={damping} forceMultiplier={force} dripIntensity={dripIntensity} themeColorHex={themeColorHex} />
 
       {/* Control Panel */}
-      <div id="controls-wrapper" className="relative z-[100]">
-        <div 
+      <div id="controls-wrapper" className="fixed inset-0 pointer-events-none z-[100] flex items-center justify-center sm:block sm:inset-auto sm:top-4 sm:right-4">
+        <motion.div 
           id="controls-panel" 
-          className={`fixed top-4 right-4 z-50 bg-[#050505]/60 p-4 border border-white/10 rounded-xl backdrop-blur-md flex flex-col gap-4 font-mono text-[10px] w-64 shadow-[0_0_20px_rgba(0,0,0,0.8)] transition-all duration-300 ${showControls ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8 pointer-events-none"}`}
+          drag
+          dragMomentum={false}
+          className={`pointer-events-auto bg-[#050505]/80 p-4 border border-white/10 rounded-xl backdrop-blur-md flex flex-col gap-4 font-mono text-[10px] w-[90vw] max-w-[280px] sm:max-w-none sm:w-64 shadow-[0_0_20px_rgba(0,0,0,0.8)] cursor-grab active:cursor-grabbing transition-opacity duration-300 relative ${showControls ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         >
-          <h3 className="text-theme font-bold tracking-widest uppercase mb-1">Canvas Parameters</h3>
+          <div className="absolute inset-x-0 top-0 h-4 rounded-t-xl cursor-grab active:cursor-grabbing flex items-center justify-center opacity-30 hover:opacity-100 transition-opacity">
+            <div className="w-8 h-1 bg-white/50 rounded-full mt-2" />
+          </div>
+          <button 
+            onClick={() => setShowControls(false)}
+            className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-white/10 text-zinc-500 hover:text-white transition-colors cursor-pointer"
+            aria-label="Close settings"
+          >
+            <X size={14} />
+          </button>
+          <h3 className="text-theme font-bold tracking-widest uppercase mb-1 mt-2 pointer-events-none">Canvas Parameters</h3>
           
           <div className="flex flex-col gap-2 relative">
             <label className="flex justify-between text-zinc-400">
@@ -221,29 +197,7 @@ export default function App() {
             </label>
             <input type="range" min="0.0" max="1.0" step="0.05" value={dripIntensity} onChange={(e) => setDripIntensity(parseFloat(e.target.value))} className="w-full accent-theme h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
           </div>
-        </div>
-      </div>
-
-      {/* SVG Gooey Matrix Filter Definition */}
-      <svg className="pointer-events-none absolute h-0 w-0" style={{ position: 'absolute', width: 0, height: 0 }}>
-        <defs>
-          <filter id="goo">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -10" result="goo" />
-            <feBlend in="SourceGraphic" in2="goo" />
-          </filter>
-        </defs>
-      </svg>
-
-      {/* Liquid Mercury UI Blobs Container (Gooey Filter Active) */}
-      <div 
-        className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-30 mix-blend-screen" 
-        style={{ filter: "url(#goo)" }}
-      >
-        <div className="gooey-blob absolute w-64 h-64 blob-1 rounded-full" />
-        <div className="gooey-blob absolute w-48 h-48 blob-2 rounded-full" />
-        <div className="gooey-blob absolute w-56 h-56 bg-theme rounded-full" />
-        <div className="gooey-blob absolute w-72 h-32 blob-1 rounded-full" />
+        </motion.div>
       </div>
 
       {/* Elegant, high-contrast structural overlay */}
@@ -282,7 +236,7 @@ export default function App() {
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-transparent to-transparent flex"><div className="w-full h-full bg-theme-alpha-20" /></div>
           
           {/* Majestic Typography Title */}
-          <div id="main-title-text" className="flex flex-col mb-5 mt-4">
+          <div id="main-title-text" className="flex flex-col mb-5 mt-4 pr-10 sm:pr-0">
             <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-theme font-bold mb-1">INFOSEC AND DESIGN ENGINEER</span>
             <h1 className="text-5xl sm:text-8xl font-black leading-[0.9] uppercase m-0 text-white font-display select-none flex flex-wrap items-center gap-x-2 gap-y-0 sm:gap-4 w-full">
               <span id="title-elijah" className="inline-block tracking-tight">Elijah</span> 
