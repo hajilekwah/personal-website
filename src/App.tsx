@@ -18,7 +18,6 @@ import SlimeCanvas from './components/SlimeCanvas';
 
 export default function App() {
   const [currentTime, setCurrentTime] = useState<string>('');
-  const [copiedText, setCopiedText] = useState<boolean>(false);
   const infoCardRef = useRef<HTMLDivElement | null>(null);
 
   // Set real-time tracking for UTC clock
@@ -99,12 +98,6 @@ export default function App() {
     );
   }, []);
 
-  const copyDomain = () => {
-    navigator.clipboard.writeText('elijahhawk.io');
-    setCopiedText(true);
-    setTimeout(() => setCopiedText(false), 2000);
-  };
-
   return (
     <main className="relative min-h-screen w-full flex flex-col justify-between items-center text-zinc-100 font-sans p-4 md:p-8 overflow-y-auto select-none bg-[#050505]">
       
@@ -116,26 +109,15 @@ export default function App() {
       <div className="absolute bottom-[10%] right-[10%] w-[250px] h-[250px] rounded-full bg-emerald-500/3 blur-[120px] pointer-events-none z-0" />
 
       {/* Header element */}
-      <header id="header-row" className="w-full max-w-6xl mx-auto flex items-center justify-between z-10 py-4 border-b border-white/[0.04] pb-5">
-        <div 
-          onClick={copyDomain}
-          className="group flex flex-col gap-0.5 cursor-pointer select-none"
-          title="Click to copy domain"
-        >
+      <header id="header-row" className="w-full max-w-6xl mx-auto flex flex-col items-start z-10 py-4 border-b border-white/[0.04] pb-5">
+        <div className="flex flex-col gap-0.5 select-none">
           <span className="text-[10px] uppercase tracking-[0.3em] text-emerald-400 font-mono font-bold flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#39ff14] animate-pulse inline-block shadow-[0_0_8px_#39ff14]" />
             SYS_ONLINE // LIQUID_ACTIVE
           </span>
-          <span className="text-sm font-medium tracking-tight text-white group-hover:text-emerald-400 transition-colors font-mono font-semibold uppercase">
-            {copiedText ? 'COPIED TO CLIPBOARD' : 'ELIJAH HAWK © 2026'}
+          <span className="text-sm font-medium tracking-tight text-white font-mono font-semibold uppercase">
+            ELIJAH HAWK © 2026
           </span>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2.5 px-3 py-1 bg-black/40 border border-white/5 rounded-full text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
-            <Terminal size={11} className="text-emerald-400" />
-            <span>PORTFOLIO_ALPHA_SHIELD</span>
-          </div>
         </div>
       </header>
 
@@ -151,16 +133,7 @@ export default function App() {
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#39ff14]/25 to-transparent" />
           
           {/* Micro status and visual indicator row */}
-          <div id="badge-status" className="flex items-center justify-between mb-8 border-b border-white/[0.05] pb-4">
-            <div className="flex items-center gap-3">
-              <span className="px-2.5 py-0.5 rounded-md text-[9px] font-mono font-black tracking-[0.2em] uppercase border border-[#39ff14]/30 bg-[#39ff14]/10 text-[#39ff14] shadow-[0_0_10px_rgba(57,255,20,0.15)]">
-                COMING SOON
-              </span>
-              <span className="text-[10px] text-zinc-500 font-mono tracking-[0.15em] uppercase">
-                REV_2026 // LAB
-              </span>
-            </div>
-            
+          <div id="badge-status" className="flex items-end justify-end mb-8 border-b border-white/[0.05] pb-4">
             <div className="flex items-center gap-1.5 text-zinc-400 font-mono text-[10px]">
               <Droplet size={11} className="text-emerald-400 animate-bounce" />
               <span className="tracking-widest text-[9px] uppercase font-bold text-zinc-400">LIQUID MATRIX OVERLAY</span>
@@ -169,7 +142,7 @@ export default function App() {
 
           {/* Majestic Typography Title */}
           <div id="main-title-text" className="flex flex-col mb-5">
-            <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-emerald-400 font-bold mb-1">DESIGN ENGINEER</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-emerald-400 font-bold mb-1">INFOSEC AND DESIGN ENGINEER</span>
             <h1 className="text-6xl sm:text-8xl font-black leading-[0.9] uppercase m-0 text-white font-display select-none flex items-center gap-4">
               <span id="title-elijah" className="inline-block tracking-tight">Elijah</span> 
               
@@ -281,7 +254,7 @@ export default function App() {
             </a>
 
             <div className="ml-auto hidden md:flex items-center gap-1 font-mono text-[9px] text-zinc-600 tracking-[0.2em] uppercase">
-              <span>COORDS // 51.5072° N</span>
+              <span>COORDS // 34.0522° N, 118.2437° W</span>
             </div>
           </div>
 
