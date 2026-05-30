@@ -55,7 +55,7 @@ const updateFragmentShaderSource = `
       vec2 dp = u_drips[i].xy;
       dp.x *= u_aspect;
       float dDist = distance(p, dp);
-      float dForce = max(0.0, 1.0 - dDist * 30.0);
+      float dForce = max(0.0, 1.0 - dDist * 120.0);
       nextHeight += dForce * u_drips[i].z;
     }
 
@@ -285,8 +285,8 @@ export default function WebGLFluidSubstrate({
         drips.push({
            x: Math.random(),
            y: 1.1, 
-           vy: -0.01 - Math.random() * 0.02,
-           force: 50.0 + Math.random() * 150.0
+           vy: -0.002 - Math.random() * 0.006, // Slower, honey-like moving speed
+           force: 30.0 + Math.random() * 100.0
         });
       }
 
