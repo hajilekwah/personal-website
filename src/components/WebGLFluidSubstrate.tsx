@@ -70,6 +70,7 @@ const renderFragmentShaderSource = `
   uniform vec2 u_delta;
   uniform float u_aspect;
   uniform vec2 u_resolution;
+  uniform vec3 u_themeColor;
 
   void main() {
     float dx = texture2D(u_water, v_texCoord + vec2(u_delta.x, 0.0)).r - texture2D(u_water, v_texCoord - vec2(u_delta.x, 0.0)).r;
@@ -89,12 +90,12 @@ const renderFragmentShaderSource = `
     // Color gradient based on normal magnitude (depth)
     float flow = length(vec2(dx, dy)) * 5.0; // amplify for visibility
     vec3 baseCol = vec3(0.015, 0.015, 0.015); // dark background
-    vec3 deepCol = vec3(0.02, 0.6, 0.15); // refined neon green main fluid
-    vec3 highlight = vec3(0.4, 1.0, 0.4); // soft lime-white highlight
+    vec3 deepCol = u_themeColor * 0.8; // main fluid uses the theme color
+    vec3 highlight = mix(u_themeColor, vec3(1.0), 0.6); // highlight based on theme color
     
     vec3 finalColor = mix(baseCol, deepCol, min(flow * 3.0, 1.0));
     finalColor += highlight * specular * 1.8;
-    finalColor += diffuse * vec3(0.0, 0.2, 0.02);
+    finalColor += diffuse * (u_themeColor * 0.2);
 
     // Grid pattern substrate
     vec2 gridCoord = v_texCoord * u_resolution * 0.015;
@@ -102,7 +103,7 @@ const renderFragmentShaderSource = `
       step(0.95, fract(gridCoord.x + normal.x * 2.0)),
       step(0.95, fract(gridCoord.y + normal.y * 2.0))
     );
-    finalColor += grid * vec3(0.01, 0.12, 0.02);
+    finalColor += grid * (u_themeColor * 0.15);
 
     gl_FragColor = vec4(finalColor, 1.0);
   }
@@ -141,12 +142,23 @@ export interface WebGLFluidSubstrateProps {
   damping?: number;
   forceMultiplier?: number;
   dripIntensity?: number;
+  themeColorHex?: string;
+}
+
+function hexToRgb(hex: string) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? [
+    parseInt(result[1], 16) / 255.0,
+    parseInt(result[2], 16) / 255.0,
+    parseInt(result[3], 16) / 255.0
+  ] : [0.0, 0.85, 0.1];
 }
 
 export default function WebGLFluidSubstrate({ 
   damping = 0.98, 
   forceMultiplier = 150.0,
-  dripIntensity = 0.2
+  dripIntensity = 0.2,
+  themeColorHex = "#39ff14"
 }: WebGLFluidSubstrateProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -154,12 +166,14 @@ export default function WebGLFluidSubstrate({
   const dampingRef = useRef(damping);
   const forceRef = useRef(forceMultiplier);
   const dripRef = useRef(dripIntensity);
+  const themeColorRef = useRef(hexToRgb(themeColorHex));
 
   useEffect(() => {
     dampingRef.current = damping;
     forceRef.current = forceMultiplier;
     dripRef.current = dripIntensity;
-  }, [damping, forceMultiplier, dripIntensity]);
+    themeColorRef.current = hexToRgb(themeColorHex);
+  }, [damping, forceMultiplier, dripIntensity, themeColorHex]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -329,6 +343,7 @@ export default function WebGLFluidSubstrate({
       gl.uniform2f(gl.getUniformLocation(renderProgram, 'u_delta'), 1.0 / simW, 1.0 / simH);
       gl.uniform1f(gl.getUniformLocation(renderProgram, 'u_aspect'), window.innerWidth / window.innerHeight);
       gl.uniform2f(gl.getUniformLocation(renderProgram, 'u_resolution'), w, h);
+      gl.uniform3fv(gl.getUniformLocation(renderProgram, 'u_themeColor'), new Float32Array(themeColorRef.current));
 
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
