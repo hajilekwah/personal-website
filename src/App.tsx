@@ -50,10 +50,15 @@ export default function App() {
       { opacity: 1, x: 0, duration: 1.0 },
       "-=1.1"
     )
-    .fromTo("#main-title-text",
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 1.4 },
+    .fromTo("#title-elijah",
+      { opacity: 0, x: -30, filter: 'blur(10px)' },
+      { opacity: 1, x: 0, filter: 'blur(0px)', duration: 1.2 },
       "-=1.2"
+    )
+    .fromTo("#title-hawk",
+      { opacity: 0, x: 180, y: -120, rotation: 25, scale: 1.8, filter: 'blur(20px)' },
+      { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1, filter: 'blur(0px)', duration: 1.6, ease: 'back.out(1.8)' },
+      "-=1.1"
     )
     .fromTo("#tagline-text",
       { opacity: 0, y: 15 },
@@ -148,8 +153,9 @@ export default function App() {
           {/* Majestic Typography Title */}
           <div id="main-title-text" className="flex flex-col mb-5">
             <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-emerald-400 font-bold mb-1">DESIGN ENGINEER</span>
-            <h1 className="text-5xl sm:text-7xl font-black leading-[0.9] tracking-tight uppercase m-0 text-white font-mono select-none">
-              Elijah <span className="text-transparent font-black" style={{ WebkitTextStroke: '1.5px rgba(57,255,20,0.85)', filter: 'drop-shadow(0 0 10px rgba(57,255,20,0.2))' }}>Hawk</span>
+            <h1 className="text-6xl sm:text-8xl font-black leading-[0.9] uppercase m-0 text-white font-display select-none flex items-center gap-4">
+              <span id="title-elijah" className="inline-block tracking-tight">Elijah</span> 
+              <span id="title-hawk" className="inline-block text-transparent font-black italic tracking-tighter" style={{ WebkitTextStroke: '1.5px rgba(57,255,20,0.85)', filter: 'drop-shadow(0 0 10px rgba(57,255,20,0.2))', textShadow: '4px 4px 0 rgba(57,255,20,0.1)' }}>HAWK</span>
             </h1>
           </div>
 
