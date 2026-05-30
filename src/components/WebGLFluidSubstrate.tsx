@@ -22,6 +22,8 @@ const updateFragmentShaderSource = `
   uniform float u_force;
   uniform vec3 u_drips[10];
   uniform int u_numDrips;
+  uniform float u_dripScale;
+  uniform float u_dripTailLength;
 
   void main() {
     // Neighbor sampling
@@ -54,8 +56,15 @@ const updateFragmentShaderSource = `
       if (i >= u_numDrips) break;
       vec2 dp = u_drips[i].xy;
       dp.x *= u_aspect;
-      float dDist = distance(p, dp);
-      float dForce = max(0.0, 1.0 - dDist * 120.0);
+      
+      vec2 diff = p - dp;
+      // Tail effect: stretch the distance vertically upwards
+      if (diff.y > 0.0) {
+        diff.y /= max(0.01, u_dripTailLength);
+      }
+      
+      float dDist = length(diff);
+      float dForce = max(0.0, 1.0 - dDist * (120.0 / u_dripScale));
       nextHeight += dForce * u_drips[i].z;
     }
 
@@ -145,6 +154,8 @@ export interface WebGLFluidSubstrateProps {
   dripIntensity?: number;
   themeColorHex?: string;
   luminosity?: number;
+  dripScale?: number;
+  dripTailLength?: number;
 }
 
 function hexToRgb(hex: string) {
@@ -161,7 +172,9 @@ export default function WebGLFluidSubstrate({
   forceMultiplier = 240.0,
   dripIntensity = 0.15,
   themeColorHex = "#9C81C8",
-  luminosity = 0.3
+  luminosity = 0.3,
+  dripScale = 1.0,
+  dripTailLength = 1.0
 }: WebGLFluidSubstrateProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -171,6 +184,8 @@ export default function WebGLFluidSubstrate({
   const dripRef = useRef(dripIntensity);
   const themeColorRef = useRef(hexToRgb(themeColorHex));
   const luminosityRef = useRef(luminosity);
+  const dripScaleRef = useRef(dripScale);
+  const dripTailLengthRef = useRef(dripTailLength);
 
   useEffect(() => {
     dampingRef.current = damping;
@@ -178,7 +193,9 @@ export default function WebGLFluidSubstrate({
     dripRef.current = dripIntensity;
     themeColorRef.current = hexToRgb(themeColorHex);
     luminosityRef.current = luminosity;
-  }, [damping, forceMultiplier, dripIntensity, themeColorHex, luminosity]);
+    dripScaleRef.current = dripScale;
+    dripTailLengthRef.current = dripTailLength;
+  }, [damping, forceMultiplier, dripIntensity, themeColorHex, luminosity, dripScale, dripTailLength]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -319,6 +336,8 @@ export default function WebGLFluidSubstrate({
 
       gl.uniform1f(gl.getUniformLocation(updateProgram, 'u_damping'), dampingRef.current);
       gl.uniform1f(gl.getUniformLocation(updateProgram, 'u_force'), forceRef.current);
+      gl.uniform1f(gl.getUniformLocation(updateProgram, 'u_dripScale'), dripScaleRef.current);
+      gl.uniform1f(gl.getUniformLocation(updateProgram, 'u_dripTailLength'), dripTailLengthRef.current);
 
       const numDrips = Math.min(drips.length, 10);
       gl.uniform1i(gl.getUniformLocation(updateProgram, 'u_numDrips'), numDrips);

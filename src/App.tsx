@@ -24,6 +24,8 @@ export default function App() {
   const [dripIntensity, setDripIntensity] = useState(0.15);
   const [themeColorHex, setThemeColorHex] = useState('#9C81C8');
   const [luminosity, setLuminosity] = useState(0.3);
+  const [dripScale, setDripScale] = useState(1.0);
+  const [dripTailLength, setDripTailLength] = useState(1.0);
   const [showControls, setShowControls] = useState(false);
 
   // Set real-time tracking for UTC clock
@@ -149,6 +151,8 @@ export default function App() {
         dripIntensity={dripIntensity} 
         themeColorHex={themeColorHex} 
         luminosity={luminosity} 
+        dripScale={dripScale}
+        dripTailLength={dripTailLength}
       />
 
       {/* Control Panel */}
@@ -210,6 +214,20 @@ export default function App() {
               <span>{(luminosity * 100).toFixed(0)}%</span>
             </label>
             <input type="range" min="0.1" max="2.0" step="0.1" value={luminosity} onChange={(e) => setLuminosity(parseFloat(e.target.value))} className="w-full accent-theme h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="flex justify-between text-zinc-400">
+              <span>Drop Scale</span>
+              <span>{dripScale.toFixed(1)}x</span>
+            </label>
+            <input type="range" min="0.1" max="5.0" step="0.1" value={dripScale} onChange={(e) => setDripScale(parseFloat(e.target.value))} className="w-full accent-theme h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="flex justify-between text-zinc-400">
+              <span>Tail Length</span>
+              <span>{dripTailLength.toFixed(1)}x</span>
+            </label>
+            <input type="range" min="0.1" max="5.0" step="0.1" value={dripTailLength} onChange={(e) => setDripTailLength(parseFloat(e.target.value))} className="w-full accent-theme h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
           </div>
         </motion.div>
       </div>
