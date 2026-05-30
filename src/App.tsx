@@ -130,7 +130,7 @@ export default function App() {
           {/* Majestic Typography Title */}
           <div id="main-title-text" className="flex flex-col mb-5 mt-4">
             <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-emerald-400 font-bold mb-1">INFOSEC AND DESIGN ENGINEER</span>
-            <h1 className="text-6xl sm:text-8xl font-black leading-[0.9] uppercase m-0 text-white font-display select-none flex items-center gap-4">
+            <h1 className="text-5xl sm:text-8xl font-black leading-[0.9] uppercase m-0 text-white font-display select-none flex flex-wrap items-center gap-x-2 gap-y-0 sm:gap-4 w-full">
               <span id="title-elijah" className="inline-block tracking-tight">Elijah</span> 
               
               <div id="hawk-wrapper" className="relative inline-block z-10 w-auto h-auto">

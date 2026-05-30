@@ -50,8 +50,12 @@ export default function SlimeCanvas() {
     if (!ctx) return;
 
     let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2); // limit to 2 for performance, but increase fidelity
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.scale(dpr, dpr);
 
     // Initialize fixed dripping hanging nodes at the top ceiling
     const initCeilingNodes = (w: number) => {
@@ -100,8 +104,11 @@ export default function SlimeCanvas() {
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width: entryWidth, height: entryHeight } = entry.contentRect;
-        width = canvas.width = entryWidth;
-        height = canvas.height = entryHeight;
+        width = entryWidth;
+        height = entryHeight;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
 
         // Re-adjust nodes on screen resize
         ceilingSlimesRef.current = initCeilingNodes(width);
@@ -393,11 +400,10 @@ export default function SlimeCanvas() {
 
     tick();
 
-    // Mouse interactive trail generator
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleInteraction = (clientX: number, clientY: number) => {
       const rect = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+      const mouseX = clientX - rect.left;
+      const mouseY = clientY - rect.top;
 
       const lastPos = lastMousePos.current;
 
@@ -473,18 +479,34 @@ export default function SlimeCanvas() {
       lastMousePos.current = { x: mouseX, y: mouseY };
     };
 
+    const handleMouseMove = (e: MouseEvent) => {
+      handleInteraction(e.clientX, e.clientY);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
     const handleMouseLeave = () => {
       lastMousePos.current = null;
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchstart', handleTouchMove, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('touchend', handleMouseLeave);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchstart', handleTouchMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('touchend', handleMouseLeave);
     };
   }, []);
 
@@ -530,6 +552,18 @@ export default function SlimeCanvas() {
           backgroundImage: 'linear-gradient(rgba(57, 255, 20, 0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(57, 255, 20, 0.012) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
           pointerEvents: 'none',
+        }}
+      />
+      
+      {/* Specular Lighting & Shimmer Overlay */}
+      <div 
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(ellipse at 50% -20%, rgba(255,255,255,0.06) 0%, transparent 50%), radial-gradient(ellipse at 80% 120%, rgba(57, 255, 20, 0.12) 0%, transparent 60%)',
+          mixBlendMode: 'overlay',
+          pointerEvents: 'none',
+          zIndex: 1,
         }}
       />
     </div>
