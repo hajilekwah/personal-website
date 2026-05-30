@@ -1,13 +1,18 @@
-# Personal portfolio
-A while back I succumbed to the online IDE idx.dev which then became Firebase Studio, which has now been succeeded by Google AI Studio.
-I built a couple of websites, and figured, why not use it to build a personal portfolio site?
-* IDE - Google AI Studio
-* Backend - Firebase
-* Hosted on GCP
-* DNS provided by Porkbun
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+</div>
+
+# Run and deploy your AI Studio app
+
+This contains everything you need to run your app locally.
+
+View your app in AI Studio: https://ai.studio/apps/f267d6ba-9e58-4d74-89c5-9b5147204e3d
 
 ## Run Locally
+
 **Prerequisites:**  Node.js
+
+
 1. Install dependencies:
    `npm install`
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key

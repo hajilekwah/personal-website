@@ -5,6 +5,7 @@ import firebaseConfigJson from '../firebase-applet-config.json';
 
 const firebaseConfig = {
   ...firebaseConfigJson,
+  // @ts-ignore
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || firebaseConfigJson.apiKey,
 };
 

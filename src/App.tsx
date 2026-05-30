@@ -5,20 +5,20 @@ import {
   Linkedin, 
   Twitter, 
   Mail, 
-  Clock, 
-  ArrowRight,
-  Terminal,
   Activity,
-  Droplet,
   Layers,
-  Sparkles,
-  ExternalLink
+  Sparkles
 } from 'lucide-react';
-import SlimeCanvas from './components/SlimeCanvas';
+import WebGLFluidSubstrate from './components/WebGLFluidSubstrate';
 
 export default function App() {
   const [currentTime, setCurrentTime] = useState<string>('');
   const infoCardRef = useRef<HTMLDivElement | null>(null);
+
+  // WebGL Controls State
+  const [damping, setDamping] = useState(0.96);
+  const [force, setForce] = useState(250);
+  const [dripIntensity, setDripIntensity] = useState(0.8);
 
   // Set real-time tracking for UTC clock
   useEffect(() => {
@@ -86,18 +86,116 @@ export default function App() {
       { opacity: 1, scale: 1, y: 0, duration: 0.8, stagger: 0.08 },
       "-=0.7"
     )
+    .fromTo("#controls-panel",
+      { opacity: 0, x: 20 },
+      { opacity: 1, x: 0, duration: 1.0 },
+      "-=0.5"
+    )
     .fromTo("#footer-row",
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 1.0 },
       "-=0.8"
     );
+
+    // Smooth ambient orbit animations for gooey blobs
+    const blobs = document.querySelectorAll('.gooey-blob');
+    if (blobs.length > 0) {
+      gsap.to(blobs[0], {
+        x: 'random(-100, 100)',
+        y: 'random(-100, 100)',
+        rotation: 'random(-45, 45)',
+        scale: 'random(0.8, 1.2)',
+        duration: 'random(4, 8)',
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true
+      });
+      gsap.to(blobs[1], {
+        x: 'random(-150, 150)',
+        y: 'random(-150, 150)',
+        rotation: 'random(-90, 90)',
+        scale: 'random(0.9, 1.3)',
+        duration: 'random(5, 9)',
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true
+      });
+      gsap.to(blobs[2], {
+        x: 'random(-120, 120)',
+        y: 'random(-120, 120)',
+        rotation: 'random(-30, 30)',
+        scale: 'random(0.7, 1.4)',
+        duration: 'random(6, 10)',
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true
+      });
+      gsap.to(blobs[3], {
+        x: 'random(-200, 200)',
+        y: 'random(-50, 50)',
+        rotation: 'random(-180, 180)',
+        scale: 'random(0.8, 1.5)',
+        duration: 'random(7, 11)',
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true
+      });
+    }
   }, []);
 
   return (
     <main className="relative min-h-screen w-full flex flex-col justify-between items-center text-zinc-100 font-sans p-4 md:p-8 overflow-y-auto select-none bg-[#050505]">
       
-      {/* Liquid Slime Physics Canvas Background layer */}
-      <SlimeCanvas />
+      {/* WebGL Fluid Physics Canvas Background layer */}
+      <WebGLFluidSubstrate damping={damping} forceMultiplier={force} dripIntensity={dripIntensity} />
+
+      {/* Control Panel */}
+      <div id="controls-panel" className="fixed top-4 right-4 z-50 bg-[#050505]/60 p-4 border border-white/10 rounded-xl backdrop-blur-md flex flex-col gap-4 font-mono text-xs w-64 shadow-[0_0_20px_rgba(0,0,0,0.8)]">
+        <h3 className="text-[#39ff14] font-bold tracking-widest uppercase mb-1">Canvas Parameters</h3>
+        <div className="flex flex-col gap-2">
+          <label className="flex justify-between text-zinc-400">
+            <span>Viscosity</span>
+            <span>{damping.toFixed(2)}</span>
+          </label>
+          <input type="range" min="0.80" max="0.99" step="0.01" value={damping} onChange={(e) => setDamping(parseFloat(e.target.value))} className="w-full accent-[#39ff14] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="flex justify-between text-zinc-400">
+            <span>Displacement Force</span>
+            <span>{force}</span>
+          </label>
+          <input type="range" min="50" max="1000" step="10" value={force} onChange={(e) => setForce(parseFloat(e.target.value))} className="w-full accent-[#39ff14] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="flex justify-between text-zinc-400">
+            <span>Drip Saturation</span>
+            <span>{dripIntensity.toFixed(2)}</span>
+          </label>
+          <input type="range" min="0.0" max="1.0" step="0.05" value={dripIntensity} onChange={(e) => setDripIntensity(parseFloat(e.target.value))} className="w-full accent-[#39ff14] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" />
+        </div>
+      </div>
+
+      {/* SVG Gooey Matrix Filter Definition */}
+      <svg className="pointer-events-none absolute h-0 w-0" style={{ position: 'absolute', width: 0, height: 0 }}>
+        <defs>
+          <filter id="goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -10" result="goo" />
+            <feBlend in="SourceGraphic" in2="goo" />
+          </filter>
+        </defs>
+      </svg>
+
+      {/* Liquid Mercury UI Blobs Container (Gooey Filter Active) */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-30 mix-blend-screen" 
+        style={{ filter: "url(#goo)" }}
+      >
+        <div className="gooey-blob absolute w-64 h-64 bg-[#10d43a] rounded-full" />
+        <div className="gooey-blob absolute w-48 h-48 bg-emerald-500 rounded-full" />
+        <div className="gooey-blob absolute w-56 h-56 bg-[#39ff14]/80 rounded-full" />
+        <div className="gooey-blob absolute w-72 h-32 bg-[#22c55e] rounded-full" />
+      </div>
 
       {/* Elegant, high-contrast structural overlay */}
       <div className="absolute inset-x-0 top-0 h-[300px] bg-gradient-to-b from-green-500/5 to-transparent blur-[100px] pointer-events-none z-0" />
